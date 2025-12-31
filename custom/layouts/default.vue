@@ -25,37 +25,9 @@ import IssueReporting from "~/components/IssueReporting.vue";
 
 <style scoped>
 .page {
-  background: radial-gradient(
-      circle at top,
-      transparent 9%,
-      #1EADEF 10%,
-      #1EADEF 15%,
-      transparent 16%
-  ),
-  radial-gradient(
-      circle at bottom,
-      transparent 19%,
-      #1EADEF 20%,
-      #1EADEF 25%,
-      transparent 26%
-  ),
-  radial-gradient(
-      circle at right,
-      transparent 19%,
-      #1EADEF 20%,
-      #1EADEF 25%,
-      transparent 26%
-  ),
-  radial-gradient(
-      circle at left,
-      transparent 9%,
-      #1EADEF 10%,
-      #1EADEF 15%,
-      transparent 16%
-  );
-  background-size: 3em 3em;
-  background-color: #ccc;
-  opacity: 1;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(45deg, #92c9b1, #92c9b1 20px, #b3e0d2 20px, #b3e0d2 40px);
 }
 </style>
 
