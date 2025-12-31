@@ -1,0 +1,16 @@
+{
+    "name": "PocketPass.io",
+    "short_name": "PocketPass.io",
+    "description": "My Awesome Nuxt 4 Application for PocketPass.io",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#000",
+    "theme_color": "#1f6fed",
+    "icons": [
+        {
+            "src": "/pocketstore-favicon.svg",
+            "sizes": "192x192",
+            "type": "image/svg+xml"
+        }
+    ]
+}
