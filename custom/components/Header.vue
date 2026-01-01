@@ -24,4 +24,8 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import { useLocalStorage } from "@vueuse/core";
 
 const open = useLocalStorage('open-navigation', false);
+
+onMounted(()=>{
+  open.value = false;
+})
 </script>
