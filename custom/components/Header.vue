@@ -1,5 +1,7 @@
 <template>
-  <section class="bg-white px-3 py-3 flex justify-between items-center mb-3">
+  <section class="bg-white px-3 py-3 flex justify-between items-center" :class="{
+    'mb-3': !open
+  }">
     <a href="/" class="text-primary">PocketPass.io</a>
     <nav>
       <section v-if="!open" class="bars">

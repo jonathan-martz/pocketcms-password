@@ -31,7 +31,7 @@
           <font-awesome-icon :icon="['fas','plus']"></font-awesome-icon>
         </button>
       </section>
-      <section class="grid grid-cols-6 gap-3 mt-3">
+      <section class="grid grid-cols-6 gap-3 mt-3 mb-3">
         <div class="col-span-6 md:col-span-2">
           <label class="floating-label mb-3">
             <span>Wonach suchst du ?</span>
