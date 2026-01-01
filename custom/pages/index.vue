@@ -18,7 +18,7 @@
 </template>
 <script setup lang="ts">
 import {usePocketBase} from "@/utils/pocketbase";
-import {useSeoMeta} from "../../storefront/.nuxt/imports";
+import {useSeoMeta} from "/.nuxt/imports";
 
 const pb = usePocketBase();
 
