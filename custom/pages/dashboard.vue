@@ -41,7 +41,7 @@
         <div class="col-span-6 md:col-span-1">
           <select v-model="limit" class="select select-sm select-primary w-full">
             <option value="10">10</option>
-            <option value="25">25</option>
+            <option value="30">30</option>
             <option value="50">50</option>
             <option value="100">100</option>
           </select>
@@ -90,7 +90,7 @@ import PasswordCard from "../components/PasswordCard.vue";
 
 const pb = usePocketBase();
 const query = ref('');
-const limit = ref(25);
+const limit = ref(30);
 const total = ref(0);
 const modalPassword = ref(false);
 const modalKeyGenerate = ref(false);
