@@ -96,7 +96,7 @@ watch(query, async () => {
 const filter = async () => {
   items.value = (await pb.collection('passwords').getList(1, 3 * 10, {
     filter: 'name ~"' + query.value + '"',
-    sort: '-created'
+    sort: 'created'
   })).items
 }
 
