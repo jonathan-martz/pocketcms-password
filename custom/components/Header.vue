@@ -22,7 +22,7 @@
         <a href="/" class="btn btn-primary btn-sm btn-block">Startseite</a>
       </div>
       <div class="col-span-3">
-        <a href="/" class="btn btn-primary btn-sm btn-block">Startseite</a>
+        <button @click="pb.authStore.clear()" v-if="pb.authStore.isValid" class="btn btn-primary btn-sm btn-block">Logout</button>
       </div>
     </section>
   </section>
