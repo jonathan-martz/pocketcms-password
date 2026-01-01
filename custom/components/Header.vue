@@ -18,4 +18,5 @@
 
 <script setup lang="ts">
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+const open = useLocalStorage('open-navigation', false);
 </script>
