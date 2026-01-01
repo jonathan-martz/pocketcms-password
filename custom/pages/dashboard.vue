@@ -31,10 +31,15 @@
           <font-awesome-icon :icon="['fas','plus']"></font-awesome-icon>
         </button>
       </section>
-      <label class="floating-label mb-3">
-        <span>Wonach suchst du ?</span>
-        <input type="search" v-model="query" class="input w-full mt-3"/>
-      </label>
+      <section class="grid grid-cols-6 gap-3 mt-3">
+        <div class="col-span-6 md:col-span-2">
+          <label class="floating-label mb-3">
+            <span>Wonach suchst du ?</span>
+            <input type="search" v-model="query" class="input w-full mt-3"/>
+          </label>
+        </div>
+        <div class="col-span-6 md:col-span-3"></div>
+      </section>
       <input type="checkbox" v-model="modalPassword" class="modal-toggle"/>
       <div class="modal" role="dialog">
         <div class="modal-box space-y-6 my-3">
