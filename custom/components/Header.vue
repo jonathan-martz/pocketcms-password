@@ -31,8 +31,10 @@
 <script setup lang="ts">
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import { useLocalStorage } from "@vueuse/core";
+import {usePocketBase} from "@/utils/pocketbase";
 
 const open = useLocalStorage('open-navigation', false);
+const pb = usePocketBase()
 
 onMounted(()=>{
   open.value = false;
