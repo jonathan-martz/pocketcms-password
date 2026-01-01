@@ -18,6 +18,12 @@
 </template>
 <script setup lang="ts">
 import {usePocketBase} from "@/utils/pocketbase";
+import {useSeoMeta} from "../../storefront/.nuxt/imports";
 
 const pb = usePocketBase();
+
+useSeoMeta({
+  'title': 'PocketPass.io - Startseite',
+  'description': 'Willkommen zum Passwort Manager von PocketPass.io'
+})
 </script>
