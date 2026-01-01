@@ -38,7 +38,14 @@
             <input type="search" v-model="query" class="input w-full mt-3"/>
           </label>
         </div>
-        <div class="col-span-6 md:col-span-3"></div>
+        <div class="col-span-6 md:col-span-1">
+          <select v-model="filterAbc" class="select select-primary select-sm w-full">
+            <option v-for="letter in alphabet" :value="letter">{{letter}}</option>
+          </select>
+        </div>
+        <div class="col-span-6 md:col-span-1">
+          <input type="number" class="input w-full" v-model="limit">
+        </div>
       </section>
       <input type="checkbox" v-model="modalPassword" class="modal-toggle"/>
       <div class="modal" role="dialog">
@@ -83,6 +90,8 @@ import PasswordCard from "../components/PasswordCard.vue";
 
 const pb = usePocketBase();
 const query = ref('');
+const alphabet = ref(["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]);
+const limit = ref(25);
 const total = ref(0);
 const modalPassword = ref(false);
 const modalKeyGenerate = ref(false);
@@ -102,8 +111,12 @@ watch(query, async () => {
   await filter()
 });
 
+watch(limit, async () => {
+  await filter()
+});
+
 const filter = async () => {
-  let data = (await pb.collection('passwords').getList(1, 3 * 10, {
+  let data = (await pb.collection('passwords').getList(1, limit.value, {
     filter: 'name ~"' + query.value + '"',
     sort: 'created'
   }));
