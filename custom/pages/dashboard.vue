@@ -21,6 +21,9 @@
     </section>
     <section v-else>
       <section class="actions flex justify-end mb-3">
+        <button class="btn btn-sm btn-primary ml-3">
+          {{total}}
+        </button>
         <a href="/de/key" class="btn btn-primary btn-sm">
           <font-awesome-icon :icon="['fas','key']"></font-awesome-icon>
         </a>
@@ -70,11 +73,12 @@ import {usePocketBase} from "@/utils/pocketbase";
 import {generatePGPKeyPair} from "@/utils/openpgp";
 import {useLocalStorage} from "@vueuse/core";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-import {decryptMessage, encryptMessage} from "@/utils/openpgp";
+import {encryptMessage} from "@/utils/openpgp";
 import PasswordCard from "../components/PasswordCard.vue";
 
 const pb = usePocketBase();
 const query = ref('');
+const total = ref(0);
 const modalPassword = ref(false);
 const modalKeyGenerate = ref(false);
 const pubKey = useLocalStorage('pubKey', '');
@@ -94,10 +98,12 @@ watch(query, async () => {
 });
 
 const filter = async () => {
-  items.value = (await pb.collection('passwords').getList(1, 3 * 10, {
+  let data = (await pb.collection('passwords').getList(1, 3 * 10, {
     filter: 'name ~"' + query.value + '"',
     sort: 'created'
-  })).items
+  }));
+  items.value = data.items
+  total.value = data.totalItems;
 }
 
 const create = async () => {
