@@ -1,5 +1,5 @@
 <template>
-  <section class="bg-white px-3 py-3 flex justify-between">
+  <section class="bg-white px-3 py-3 flex justify-between items-center mb-3">
     <a href="/" class="text-primary">PocketPass.io</a>
     <nav>
       <section v-if="open" class="bars">
@@ -13,6 +13,9 @@
         </button>
       </section>
     </nav>
+  </section>
+  <section v-if="open" class="bg-red-400 px-3 py-3">
+    <a href="/" class="btn btn-primary btn-sm">Startseite</a>
   </section>
 </template>
 
