@@ -2,7 +2,7 @@
   <section class="bg-white px-3 py-3 flex justify-between items-center mb-3">
     <a href="/" class="text-primary">PocketPass.io</a>
     <nav>
-      <section v-if="open" class="bars">
+      <section v-if="!open" class="bars">
         <button @click="open = !open">
           <font-awesome-icon :icon="['fas', 'bars']" size="2x"/>
         </button>
@@ -14,7 +14,7 @@
       </section>
     </nav>
   </section>
-  <section v-if="!open" class="bg-red-400 px-3 py-3">
+  <section v-if="open" class="bg-red-400 px-3 py-3">
     <a href="/" class="btn btn-primary btn-sm">Startseite</a>
   </section>
 </template>
