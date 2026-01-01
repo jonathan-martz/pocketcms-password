@@ -14,7 +14,7 @@
       </section>
     </nav>
   </section>
-  <section v-if="open" class="bg-red-400 px-3 py-3">
+  <section v-if="open" class="bg-red-400 px-3 py-3 mb-3">
     <a href="/" class="btn btn-primary btn-sm">Startseite</a>
   </section>
 </template>
