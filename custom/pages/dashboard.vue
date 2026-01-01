@@ -20,14 +20,14 @@
       </div>
     </section>
     <section v-else>
-      <section class="actions flex justify-end mb-3">
-        <button class="btn btn-sm btn-primary mr-3">
+      <section class="actions flex justify-end mb-3 space-x-3">
+        <button class="btn btn-sm btn-primary">
           {{total}}
         </button>
         <a href="/de/key" class="btn btn-primary btn-sm">
           <font-awesome-icon :icon="['fas','key']"></font-awesome-icon>
         </a>
-        <button @click="modalPassword= true" class="btn btn-sm btn-primary ml-3">
+        <button @click="modalPassword= true" class="btn btn-sm btn-primary">
           <font-awesome-icon :icon="['fas','plus']"></font-awesome-icon>
         </button>
       </section>
