@@ -2,7 +2,8 @@
   <div class="card bg-gray-400 shadow-sm">
     <div class="card-body">
       <h2 class="card-title">{{ props.data.name }}</h2>
-      <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>
+      <p v-if="props.data.notes">{{props.data.notes}}</p>
+      <p v-if="props.data.username">{{props.data.username}}</p>
       <div class="card-actions justify-end">
         <button @click="remove(props.data.id)" class="btn btn-error btn-sm">
           <font-awesome-icon :icon="['fas','trash']"></font-awesome-icon>
