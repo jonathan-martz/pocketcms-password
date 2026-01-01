@@ -39,12 +39,12 @@
           </label>
         </div>
         <div class="col-span-6 md:col-span-1">
-          <select v-model="filterAbc" class="select select-primary select-sm w-full">
-            <option v-for="letter in alphabet" :value="letter">{{letter}}</option>
+          <select v-model="limit" class="select select-sm select-primary">
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
           </select>
-        </div>
-        <div class="col-span-6 md:col-span-1">
-          <input type="number" class="input w-full" v-model="limit">
         </div>
       </section>
       <input type="checkbox" v-model="modalPassword" class="modal-toggle"/>
@@ -90,7 +90,6 @@ import PasswordCard from "../components/PasswordCard.vue";
 
 const pb = usePocketBase();
 const query = ref('');
-const alphabet = ref(["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]);
 const limit = ref(25);
 const total = ref(0);
 const modalPassword = ref(false);
