@@ -1,5 +1,5 @@
 <template>
-  <section class="bg-white px-3 py-3 max-w-6xl">
+  <section class="bg-white px-3 py-3 max-w-6xl mt-3">
     <section v-if="!pb.authStore.record?.public_key">
       <button @click="modalKeyGenerate=true" class="btn btn-sm btn-primary btn-block">
         Generate Key
