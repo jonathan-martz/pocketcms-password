@@ -2,7 +2,7 @@
   <div class="card bg-gray-400 shadow-sm">
     <div class="card-body">
       <h2 class="card-title">{{ props.data.name }}</h2>
-      <p v-if="props.data.notes">{{props.data.notes}}</p>
+      <p v-if="props.data.notes" class="break-all">{{props.data.notes}}</p>
       <p v-if="props.data.username">{{props.data.username}}</p>
       <div class="card-actions justify-end">
         <button @click="remove(props.data.id)" class="btn btn-error btn-sm">
