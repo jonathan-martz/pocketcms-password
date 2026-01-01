@@ -8,14 +8,15 @@
         <button @click="remove(props.data.id)" class="btn btn-error btn-sm">
           <font-awesome-icon :icon="['fas','trash']"></font-awesome-icon>
         </button>
-        <button @click="copyText(props.data.username)" class="btn btn-primary btn-sm">
+        <button @click="copyText(props.data.username)" v-if="isHttps" class="btn btn-primary btn-sm">
           <font-awesome-icon :icon="['fas','copy']"></font-awesome-icon>
           <span>Username</span>
         </button>
-        <button @click="copyPassword()" class="btn btn-primary btn-sm">
+        <button @click="copyPassword()" v-if="isHttps" class="btn btn-primary btn-sm">
           <font-awesome-icon :icon="['fas','copy']"></font-awesome-icon>
           <span>Password</span>
         </button>
+        <p v-if="!isHttps" class="alert alert-error">Verbindung ist nicht sicher</p>
       </div>
     </div>
   </div>
@@ -39,6 +40,8 @@ const copyPassword = async () => {
       await decryptMessage(props.data.encrypted, privKey.value, 'password')
   );
 };
+
+const isHttps = location.protocol === 'https:'
 
 const remove = async (id) => {
   if (confirm('Willst du es wirklich löschen ?')) {
