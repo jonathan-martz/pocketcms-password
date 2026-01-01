@@ -21,7 +21,7 @@
     </section>
     <section v-else>
       <section class="actions flex justify-end mb-3">
-        <button class="btn btn-sm btn-primary ml-3">
+        <button class="btn btn-sm btn-primary mr-3">
           {{total}}
         </button>
         <a href="/de/key" class="btn btn-primary btn-sm">
