@@ -86,7 +86,7 @@ import {generatePGPKeyPair} from "@/utils/openpgp";
 import {useLocalStorage} from "@vueuse/core";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {encryptMessage} from "@/utils/openpgp";
-import PasswordCard from "../components/PasswordCard.vue";
+import PasswordCard from "@/components/PasswordCard.vue";
 
 const pb = usePocketBase();
 const query = ref('');
