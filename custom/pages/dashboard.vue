@@ -106,6 +106,11 @@ const form = ref({
   public_key: pubKey.value
 });
 
+useSeoMeta({
+  title: 'Dashboard - Password Manager',
+  description: 'Manage your passwords securely with our password manager'
+});
+
 watch(query, async () => {
   await filter()
 });
