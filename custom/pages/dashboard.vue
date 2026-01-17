@@ -61,7 +61,13 @@
           </label>
           <label class="floating-label">
             <span>Your Password</span>
-            <input type="password" v-model="form.password" class="input validator w-full"/>
+            <input :type="inputPassword ? 'text':'password'" v-model="form.password" class="input validator w-full"/>
+            <button @click="generatePassword()" class="btn btn-sm btn-secondary">
+              generate
+            </button>
+            <button @click="showPassword()" class="btn btn-sm btn-secondary">
+              show
+            </button>
           </label>
           <button @click="create()" class="btn btn-primary btn-sm">
             anlegen
@@ -89,6 +95,7 @@ import {encryptMessage} from "@/utils/openpgp";
 import PasswordCard from "@/components/PasswordCard.vue";
 
 const pb = usePocketBase();
+const inputPassword = ref(false);
 const query = ref('');
 const limit = ref(30);
 const total = ref(0);
@@ -156,6 +163,21 @@ const generate = async () => {
   )
   privKey.value = privateKey;
   pubKey.value = publicKey;
+}
+
+function generatePassword() {
+  var length = 20,
+      charset = "!abcdefghijklmnopqrstuvwxyz:;_><+#ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789?",
+      retVal = "";
+  for (var i = 0, n = charset.length; i < length; ++i) {
+    retVal += charset.charAt(Math.floor(Math.random() * n));
+  }
+  form.value.password = retVal;
+  return retVal;
+}
+
+const showPassword = ()=>{
+  inputPassword.value = !inputPassword.value;
 }
 
 onMounted(async () => {
