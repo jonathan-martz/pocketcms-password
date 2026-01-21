@@ -10,18 +10,18 @@
         </section>
       </div>
       <div v-if="isHttps">
-        <p v-if="props.data.notes" class="break-all">{{ props.data.notes }}</p>
         <p v-if="props.data.username">{{ props.data.username }}</p>
-        <div class="card-actions justify-end mt-3">
-          <button @click="showPassword()" class="show btn btn-primary btn-sm">
-            <font-awesome-icon :icon="['fas','eye']"></font-awesome-icon>
-            <span>{{show}}</span>
-          </button>
-          <button @click="copyText(props.data.username)" v-if="isHttps" class="btn btn-primary btn-sm">
+        <button @click="showPassword()" class="show btn btn-primary btn-sm btn-block text-center mt-3">
+          <font-awesome-icon :icon="['fas','eye']"></font-awesome-icon>
+          <span>Password: {{show}}</span>
+          <font-awesome-icon :icon="['fas','eye']"></font-awesome-icon>
+        </button>
+        <div class="card-actions justify-end mt-3 grid grid-cols-2">
+          <button @click="copyText(props.data.username)" v-if="isHttps" class="btn btn-secondary btn-sm col-span-2 md:col-span-1">
             <font-awesome-icon :icon="['fas','copy']"></font-awesome-icon>
             <span>Username</span>
           </button>
-          <button @click="copyPassword()" v-if="isHttps" class="btn btn-primary btn-sm">
+          <button @click="copyPassword()" v-if="isHttps" class="btn btn-secondary btn-sm col-span-2 md:col-span-1">
             <font-awesome-icon :icon="['fas','copy']"></font-awesome-icon>
             <span>Password</span>
           </button>
@@ -42,7 +42,7 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 
 const privKey = useLocalStorage('privKey', '');
 const pb = usePocketBase()
-const show = ref('???');
+const show = ref('anzeigen');
 
 const props = defineProps({
   data: {
@@ -67,11 +67,11 @@ const remove = async (id) => {
 const showPassword = async () => {
   console.log('encypretd', props.data.encrypted);
   console.log('privkey', privKey.value);
-if(show.value === '???'){
+if(show.value === 'anzeigen'){
   show.value = await decryptMessage(props.data.encrypted, privKey.value, 'password')
 }
 else{
-  show.value = '???'
+  show.value = 'anzeigen'
 }
 
 };
