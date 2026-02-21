@@ -1,7 +1,7 @@
 {
   "domains": {
-    "nuxt": "demo.pocketcms.io",
-    "pocketbase": "admin.pocketcms.io"
+    "nuxt": "demo.pocketstore.io",
+    "pocketbase": "admin.pocketstore.io"
   },
   "maintance": {
     "enabled": false,
