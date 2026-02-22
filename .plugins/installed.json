@@ -65,7 +65,7 @@
   {
     "version": "latest",
     "name": "homepage-demo",
-    "vendor": "pocketstore-io",
+    "vendor": "pocketcms-io",
     "revision": "7d68e6e094a021b890d92a2ce62a4932c185c05f",
     "source": "custom"
   },
