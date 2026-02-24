@@ -21,7 +21,7 @@ type Plugin struct {
 	Prio     int    `json:"prio,omitempty"`
 	Revision string `json:"revision,omitempty"` // include revision in installed.json
 	BasePath string `json:"-"`
-	Source   string `json:"-"` // Track source: "baseline", "custom", "storefront", or parent plugin key
+	Source   string `json:"source,omitempty"` // Track source: "baseline", "custom", "storefront", "extensions", or parent plugin key
 }
 
 type PluginJson struct {
@@ -29,6 +29,42 @@ type PluginJson struct {
 	Revision     string   `json:"revision,omitempty"`
 	Version      string   `json:"version,omitempty"`
 	Requirements []string `json:"requirements,omitempty"`
+}
+
+type PocketstoreConfig struct {
+	ExtensionRaw json.RawMessage `json:"extension,omitempty"`
+}
+
+func (p *PocketstoreConfig) GetExtensions() (map[string]Plugin, error) {
+	if len(p.ExtensionRaw) == 0 {
+		return make(map[string]Plugin), nil
+	}
+
+	// Try to unmarshal as boolean first
+	var boolValue bool
+	if err := json.Unmarshal(p.ExtensionRaw, &boolValue); err == nil {
+		// If it's a boolean, return empty map
+		return make(map[string]Plugin), nil
+	}
+
+	// Try to unmarshal as string
+	var stringValue string
+	if err := json.Unmarshal(p.ExtensionRaw, &stringValue); err == nil {
+		// If it's a string, return empty map
+		return make(map[string]Plugin), nil
+	}
+
+	// Try to unmarshal as map[string]Plugin
+	var extensions map[string]Plugin
+	if err := json.Unmarshal(p.ExtensionRaw, &extensions); err != nil {
+		return nil, fmt.Errorf("extension field must be boolean, string, or map of plugins: %v", err)
+	}
+
+	return extensions, nil
+}
+
+type RemoteExtensions struct {
+	Store map[string]int `json:"store,omitempty"`
 }
 
 var (
@@ -80,17 +116,19 @@ func readPrio(vendor, name string) int {
 }
 
 // parsePluginURL extracts vendor and name from URLs like:
-// "github.com/pocketstore-io/plugin-image-slider" -> ("pocketstore-io", "image-slider")
-// "github.com/pocketstore-io/reviews" -> ("pocketstore-io", "reviews")
+// "github.com/pocketstore-io/plugin-image-slider" -> ("pocketstore-io", "plugin-image-slider")
+// "pocketstore-io/plugin-reviews" -> ("pocketstore-io", "plugin-reviews")
 func parsePluginURL(url string) (vendor, name string, ok bool) {
 	parts := strings.Split(url, "/")
-	if len(parts) < 3 {
+	if len(parts) < 2 {
 		return "", "", false
 	}
 	vendor = parts[len(parts)-2]
 	name = parts[len(parts)-1]
-	// Remove "plugin-" prefix if present
-	name = strings.TrimPrefix(name, "plugin-")
+	// Ensure "plugin-" prefix is present
+	if !strings.HasPrefix(name, "plugin-") {
+		name = "plugin-" + name
+	}
 	return vendor, name, true
 }
 
@@ -335,7 +373,7 @@ func computeDirSHA1(dir string) (string, error) {
 }
 
 // resolveRequirements recursively resolves all plugin requirements
-func resolveRequirements(baselinePlugins, customPlugins, storefrontPlugins []Plugin) ([]Plugin, error) {
+func resolveRequirements(baselinePlugins, customPlugins, storefrontPlugins, extensionPlugins []Plugin) ([]Plugin, error) {
 	seen := make(map[string]bool)
 	result := make([]Plugin, 0)
 	queue := make([]Plugin, 0)
@@ -359,6 +397,7 @@ func resolveRequirements(baselinePlugins, customPlugins, storefrontPlugins []Plu
 	addPlugins(baselinePlugins, "baseline")
 	addPlugins(customPlugins, "custom")
 	addPlugins(storefrontPlugins, "storefront")
+	addPlugins(extensionPlugins, "extensions")
 
 	// BFS traversal to resolve all dependencies
 	for len(queue) > 0 {
@@ -421,6 +460,33 @@ func resolveRequirements(baselinePlugins, customPlugins, storefrontPlugins []Plu
 		printTree(baselinePlugins, "baseline/plugins.json")
 		printTree(customPlugins, "custom/plugins.json")
 		printTree(storefrontPlugins, "storefront/plugins.json")
+		if len(extensionPlugins) > 0 {
+			printTree(extensionPlugins, "extensions (remote + local)")
+		}
+	}
+
+	// Print summary of plugins installed by extensions
+	extensionDeps := make(map[string][]string)
+	for _, ext := range extensionPlugins {
+		extKey := ext.Vendor + "/" + ext.Name
+		for pluginKey, source := range sourceMap {
+			if source == extKey {
+				extensionDeps[extKey] = append(extensionDeps[extKey], pluginKey)
+			}
+		}
+	}
+
+	if len(extensionDeps) > 0 {
+		fmt.Println("\n==> Plugins installed by extensions:")
+		for _, ext := range extensionPlugins {
+			extKey := ext.Vendor + "/" + ext.Name
+			if deps, exists := extensionDeps[extKey]; exists && len(deps) > 0 {
+				fmt.Printf("\n🔌 %s installs:\n", extKey)
+				for _, dep := range deps {
+					fmt.Printf("  → %s\n", dep)
+				}
+			}
+		}
 	}
 
 	return result, nil
@@ -438,7 +504,7 @@ func printNodeWithSource(tree map[string][]string, sourceMap map[string]string, 
 	} else {
 		source := sourceMap[key]
 		sourceLabel := ""
-		if source != "" && source != "baseline" && source != "custom" && source != "storefront" {
+		if source != "" && source != "baseline" && source != "custom" && source != "storefront" && source != "extensions" {
 			sourceLabel = fmt.Sprintf(" (required by: %s)", source)
 		}
 		fmt.Printf("%s%s %s%s\n", prefix, marker, key, sourceLabel)
@@ -467,8 +533,120 @@ func printNodeWithSource(tree map[string][]string, sourceMap map[string]string, 
 	}
 }
 
-// Step 1: mergePlugins merges baseline, custom and storefront plugins and resolves requirements
+// fetchRemoteExtensions fetches extensions from a remote URL
+func fetchRemoteExtensions(url string) (map[string]Plugin, error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch extensions from %s: %v", url, err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("bad status from %s: %s", url, resp.Status)
+	}
+
+	var remote RemoteExtensions
+	if err := json.NewDecoder(resp.Body).Decode(&remote); err != nil {
+		return nil, fmt.Errorf("failed to decode extensions from %s: %v", url, err)
+	}
+
+	// Convert store map to Plugin objects
+	extensions := make(map[string]Plugin)
+	for key, prio := range remote.Store {
+		vendor, name, ok := parsePluginURL(key)
+		if !ok {
+			fmt.Printf("Warning: invalid plugin key in remote extensions: %s\n", key)
+			continue
+		}
+		// parsePluginURL already ensures "plugin-" prefix
+		pluginKey := vendor + "/" + name
+		extensions[pluginKey] = Plugin{
+			Vendor:  vendor,
+			Name:    name,
+			Version: "latest",
+			Prio:    prio,
+		}
+	}
+
+	return extensions, nil
+}
+
+// fetchExtensions fetches plugins from remote and local sources (Step 1)
+func fetchExtensions() ([]Plugin, error) {
+	// Read local pocketstore config first to check if extensions are disabled
+	data, err := os.ReadFile("custom/pocketstore.json")
+	if err != nil && !os.IsNotExist(err) {
+		return nil, fmt.Errorf("error reading custom/pocketstore.json: %v", err)
+	}
+
+	var extensionsDisabled bool
+	var localExtensions map[string]Plugin
+
+	if len(data) > 0 {
+		var config PocketstoreConfig
+		if err := json.Unmarshal(data, &config); err != nil {
+			return nil, fmt.Errorf("error parsing custom/pocketstore.json: %v", err)
+		}
+
+		// Check if extension is explicitly set to false (boolean)
+		if len(config.ExtensionRaw) > 0 {
+			var boolValue bool
+			if err := json.Unmarshal(config.ExtensionRaw, &boolValue); err == nil && !boolValue {
+				extensionsDisabled = true
+			}
+		}
+
+		localExtensions, err = config.GetExtensions()
+		if err != nil {
+			return nil, fmt.Errorf("error parsing extensions from custom/pocketstore.json: %v", err)
+		}
+	} else {
+		localExtensions = make(map[string]Plugin)
+	}
+
+	// If extensions are explicitly disabled, return empty list
+	if extensionsDisabled {
+		fmt.Println("Extensions disabled in custom/pocketstore.json")
+		return []Plugin{}, nil
+	}
+
+	// Fetch from remote pocketstore
+	remoteExtensions, err := fetchRemoteExtensions("https://plugins.pocketstore.io/extensions.json")
+	if err != nil {
+		fmt.Printf("Warning: failed to fetch remote extensions: %v\n", err)
+		remoteExtensions = make(map[string]Plugin)
+	}
+
+	// Merge extensions: local overrides remote
+	merged := make(map[string]Plugin)
+	for key, plugin := range remoteExtensions {
+		merged[key] = plugin
+	}
+	for key, plugin := range localExtensions {
+		merged[key] = plugin
+	}
+
+	// Convert to slice
+	var plugins []Plugin
+	for _, plugin := range merged {
+		plugins = append(plugins, plugin)
+	}
+
+	fmt.Printf("Fetched %d remote extensions and %d local extensions\n", len(remoteExtensions), len(localExtensions))
+	fmt.Printf("Total unique extensions: %d\n", len(merged))
+
+	return plugins, nil
+}
+
+// Step 2: mergePlugins merges baseline, custom, storefront plugins and fetched extensions, then resolves requirements
 func mergePlugins() error {
+	// Step 1: Fetch extensions from remote and local sources
+	fmt.Println("==> Step 1: Fetching extensions")
+	extensionPlugins, err := fetchExtensions()
+	if err != nil {
+		return fmt.Errorf("error fetching extensions: %v", err)
+	}
+
 	baselinePlugins, err := readPluginsFromFile("baseline/plugins.json")
 	if err != nil {
 		return fmt.Errorf("error reading baseline/plugins.json: %v", err)
@@ -488,17 +666,61 @@ func mergePlugins() error {
 		}
 	}
 
-	fmt.Printf("Loaded %d plugins from baseline/plugins.json\n", len(baselinePlugins))
+	fmt.Printf("\nLoaded %d plugins from baseline/plugins.json\n", len(baselinePlugins))
 	fmt.Printf("Loaded %d plugins from custom/plugins.json\n", len(customPlugins))
 	fmt.Printf("Loaded %d plugins from storefront/plugins.json\n", len(storefrontPlugins))
+	fmt.Printf("Loaded %d plugins from extensions\n", len(extensionPlugins))
 
-	// Resolve all requirements recursively
-	resolved, err := resolveRequirements(baselinePlugins, customPlugins, storefrontPlugins)
+	// List all extensions
+	if len(extensionPlugins) > 0 {
+		for _, ext := range extensionPlugins {
+			fmt.Printf("  • %s/%s (version: %s)\n", ext.Vendor, ext.Name, ext.Version)
+		}
+	}
+
+	// Resolve all requirements recursively, including extension plugins
+	resolved, err := resolveRequirements(baselinePlugins, customPlugins, storefrontPlugins, extensionPlugins)
 	if err != nil {
 		return fmt.Errorf("error resolving requirements: %v", err)
 	}
 
+	// Count and list plugins installed by extensions (including their dependencies)
+	extensionInstalledCount := 0
+	extensionDepsMap := make(map[string][]string)
+
+	// Build map of extension -> dependencies
+	for _, ext := range extensionPlugins {
+		extKey := ext.Vendor + "/" + ext.Name
+		for _, p := range resolved {
+			if p.Source == extKey {
+				extensionDepsMap[extKey] = append(extensionDepsMap[extKey], p.Vendor+"/"+p.Name)
+				extensionInstalledCount++
+			} else if p.Source == "extensions" && p.Vendor+"/"+p.Name == extKey {
+				extensionInstalledCount++
+			}
+		}
+	}
+
+	// Display plugins by extension
+	if len(extensionPlugins) > 0 {
+		fmt.Println("\n==> Plugins by extension:")
+		for _, ext := range extensionPlugins {
+			extKey := ext.Vendor + "/" + ext.Name
+			fmt.Printf("\n🔌 %s:\n", extKey)
+			if deps, exists := extensionDepsMap[extKey]; exists && len(deps) > 0 {
+				for _, dep := range deps {
+					fmt.Printf("  → %s\n", dep)
+				}
+			} else {
+				fmt.Printf("  (no additional dependencies)\n")
+			}
+		}
+	}
+
 	fmt.Printf("\nTotal plugins after resolving requirements: %d\n", len(resolved))
+	if extensionInstalledCount > len(extensionPlugins) {
+		fmt.Printf("  • %d from extensions (including %d dependencies)\n", extensionInstalledCount, extensionInstalledCount-len(extensionPlugins))
+	}
 
 	out, err := json.MarshalIndent(resolved, "", "  ")
 	if err != nil {
@@ -549,7 +771,9 @@ func installPlugins() error {
 		// Don't check if latest exists, just try to download it
 		plugin.Version = pluginVersion
 
-		url := fmt.Sprintf("https://download.pocketstore.io/d/plugins/%s/%s/%s.zip", plugin.Vendor, plugin.Name, pluginVersion)
+		// Strip "plugin-" prefix from name for download URL
+		pluginNameForDownload := strings.TrimPrefix(plugin.Name, "plugin-")
+		url := fmt.Sprintf("https://download.pocketstore.io/d/plugins/%s/%s/%s.zip", plugin.Vendor, pluginNameForDownload, pluginVersion)
 		zipPath := filepath.Join(cacheDir, fmt.Sprintf("%s-%s-%s.zip", plugin.Vendor, plugin.Name, pluginVersion))
 		destDir := filepath.Join(".plugins", "repos", plugin.Vendor, plugin.Name)
 

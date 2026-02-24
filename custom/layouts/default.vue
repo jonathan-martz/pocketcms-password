@@ -1,18 +1,19 @@
 <template>
-  <section class="page min-h-screen" data-theme="light">
     <header>
       <Header/>
     </header>
     <main class="mx-auto max-w-6xl min-h-screen px-3 2xl:px-0">
+      <Messages/>
       <Breadcrumb/>
+      <CookieBanner/>
       <BackToTop/>
-      <IssueReporting vendor="jonathan-martz" host="github.com" name="pocketcms-password" />
+      <BugReporting />
+      <IssueReporting vendor="pocketcms-io" host="git.jmse.cloud" name="demo" />
       <slot/>
     </main>
     <footer>
       <Footer/>
     </footer>
-  </section>
 </template>
 <script setup lang="ts">
 import "../main.css";
@@ -21,13 +22,15 @@ import Footer from "~/components/Footer.vue";
 import Header from "~/components/Header.vue";
 import BugReporting from "~/components/BugReporting.vue";
 import IssueReporting from "~/components/IssueReporting.vue";
+import BackToTop from "~/components/BackToTop.vue";
 </script>
 
 <style scoped>
 .page {
-  width: 100%;
-  height: 100%;
-  background: repeating-linear-gradient(45deg, #92c9b1, #92c9b1 20px, #b3e0d2 20px, #b3e0d2 40px);
+  background-color: #e66464;
+  background-image: linear-gradient(to right, transparent 50%, rgba(255, 255, 255, 0.5) 50%),
+  linear-gradient(to bottom, transparent 50%, rgba(255, 255, 255, 0.5) 50%);
+  background-size: 20px 20px;
 }
 </style>
 

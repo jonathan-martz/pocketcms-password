@@ -1,40 +1,54 @@
 <template>
-  <section class="bg-white px-3 py-3 flex justify-between items-center" :class="{
-    'mb-3': !open
-  }">
-    <a href="/" class="text-primary">PocketPass.io</a>
-    <nav>
-      <section v-if="!open" class="bars">
-        <button @click="open = !open">
-          <font-awesome-icon :icon="['fas', 'bars']" size="2x"/>
+  <section class="header w-full bg-secondary text-white px-3 py-3" :class="{'mb-3': !open}">
+    <div class="flex w-full justify-between mx-auto max-w-6xl">
+      <h1 class="text-xl flex items-center">
+        <a href="/" class="font-bold">PocketCms.io</a>
+      </h1>
+      <nav class="desktop hidden md:inline">
+        <ul class="flex text-sm mt-2 list-disc space-x-10">
+          <li class=""><a href="/">Startseite</a></li>
+          <li class="">
+            <NuxtLink to="/de/demos">
+              Demos
+            </NuxtLink>
+          </li>
+          <li class=""><a href="/">Docs</a></li>
+        </ul>
+      </nav>
+      <nav class="md:hidden text-white">
+        <button v-if="!open" @click="open = !open" class="btn btn-sm btn-primary">
+          <FontAwesomeIcon :icon="['fas', 'bars']" />
         </button>
-      </section>
-      <section v-else class="times">
-        <button @click="open = !open">
-          <font-awesome-icon :icon="['fas', 'times']" size="2x"/>
+        <button v-else @click="open = !open" class="btn btn-sm btn-primary">
+          <FontAwesomeIcon :icon="['fas', 'times']" />
         </button>
-      </section>
-    </nav>
+      </nav>
+    </div>
   </section>
-  <section v-if="open" class="bg-red-400 px-3 py-3 mb-3">
+
+  <section v-if="open" :class="{'mb-3': open}" class="bg-white px-3 py-3">
     <section class="grid grid-cols-6 gap-3">
       <div class="col-span-3">
-        <a href="/" class="btn btn-primary btn-sm btn-block">Startseite</a>
+        <a href="/" class="btn btn-block btn-sm btn-secondary">Startseite</a>
       </div>
       <div class="col-span-3">
-        <button @click="pb.authStore.clear()" v-if="pb.authStore.isValid" class="btn btn-primary btn-sm btn-block">Logout</button>
+        <a href="/" class="btn btn-block btn-sm btn-secondary">Startseite</a>
+      </div>
+      <div class="col-span-3">
+        <a href="/demos" class="btn btn-block btn-sm btn-secondary">Demos</a>
+      </div>
+      <div class="col-span-3">
+        <a href="/impressum" class="btn btn-block btn-sm btn-secondary">Impressum</a>
       </div>
     </section>
   </section>
 </template>
 
 <script setup lang="ts">
-import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import { useLocalStorage } from "@vueuse/core";
-import {usePocketBase} from "@/utils/pocketbase";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
-const open = useLocalStorage('open-navigation', false);
-const pb = usePocketBase()
+const open = useLocalStorage('mobile-nav', false, {});
 
 onMounted(()=>{
   open.value = false;

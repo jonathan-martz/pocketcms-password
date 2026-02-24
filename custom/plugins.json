@@ -1,7 +1,7 @@
 [
   {
     "name": "disclaimer-demo",
-    "vendor": "pocketstore-io",
+    "vendor": "pocketcms-io",
     "version": "latest"
   },
   {
@@ -11,16 +11,11 @@
   },
   {
     "name": "homepage-demo",
-    "vendor": "pocketstore-io",
+    "vendor": "pocketcms-io",
     "version": "latest"
   },
   {
     "name": "issue-reporting",
-    "vendor": "pocketstore-io",
-    "version": "latest"
-  },
-  {
-    "name": "bug-reporting",
     "vendor": "pocketstore-io",
     "version": "latest"
   },

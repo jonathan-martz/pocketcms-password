@@ -1,11 +1,7 @@
 {
   "domains": {
-    "nuxt": "pocketpass.io",
-    "pocketbase": "admin.pocketpass.io"
-  },
-  "maintance": {
-    "enabled": false,
-    "until": "12.10.2026 12:12:12"
+    "nuxt": "demo.pocketstore.io",
+    "pocketbase": "admin.pocketstore.io"
   },
   "emails": {
     "support": {
@@ -13,9 +9,19 @@
       "name": "support"
     }
   },
+  "extension": false,
+  "integrations": {
+    "pirsch": {
+      "id": "HhjVnlm0MCX3qYXiZ0DWYeaFG8JaykLX"
+    }
+  },
   "language": {
     "fallback": "de",
-    "languages": ["en", "de", "fr"],
+    "languages": [
+      "en",
+      "de",
+      "fr"
+    ],
     "locales": [
       {
         "code": "de",
@@ -27,22 +33,8 @@
       }
     ]
   },
-  "currency": {
-    "fallback": "€",
-    "currencies": ["€", "$"]
-  },
-  "integrations": {
-    "cookiefirst": {
-      "id": "36ed47d8-6292-415a-bfce-f218a0e0d183"
-    },
-    "pirsch": {
-      "id": "HTT3tN1LtXvPWmtOqkhfLPy9XK8OKYL4"
-    }
-  },
-  "payment": {
-    "paypal": {
-      "id": "AUtZarD95T0LXYT1Dn51mBIBswWY3QDb-S380C-_xgfhqqJ6IEJHZh-wuRnRzNy184Lj5fpbXokZBiOk",
-      "currency": "EUR"
-    }
+  "maintance": {
+    "enabled": false,
+    "until": "12.10.2026 12:12:12"
   }
 }
