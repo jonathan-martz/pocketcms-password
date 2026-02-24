@@ -1,7 +1,7 @@
 {
   "domains": {
-    "nuxt": "demo.pocketstore.io",
-    "pocketbase": "admin.pocketstore.io"
+    "nuxt": "www.pocketpass.io",
+    "pocketbase": "admin.pocketpass.io"
   },
   "emails": {
     "support": {

@@ -1,4 +1,5 @@
 <template>
+  <section id="page">
     <header>
       <Header/>
     </header>
@@ -7,13 +8,14 @@
       <Breadcrumb/>
       <CookieBanner/>
       <BackToTop/>
-      <BugReporting />
-      <IssueReporting vendor="pocketcms-io" host="git.jmse.cloud" name="demo" />
+      <BugReporting/>
+      <IssueReporting vendor="pocketcms-passwword" host="github.com" name="pocketcms-passwword"/>
       <slot/>
     </main>
     <footer>
       <Footer/>
     </footer>
+  </section>
 </template>
 <script setup lang="ts">
 import "../main.css";
@@ -26,11 +28,39 @@ import BackToTop from "~/components/BackToTop.vue";
 </script>
 
 <style scoped>
-.page {
-  background-color: #e66464;
-  background-image: linear-gradient(to right, transparent 50%, rgba(255, 255, 255, 0.5) 50%),
-  linear-gradient(to bottom, transparent 50%, rgba(255, 255, 255, 0.5) 50%);
-  background-size: 20px 20px;
+#page {
+  background: radial-gradient(
+      circle at top,
+      transparent 9%,
+      #1EADEF 10%,
+      #1EADEF 15%,
+      transparent 16%
+  ),
+  radial-gradient(
+      circle at bottom,
+      transparent 19%,
+      #1EADEF 20%,
+      #1EADEF 25%,
+      transparent 26%
+  ),
+  radial-gradient(
+      circle at right,
+      transparent 19%,
+      #1EADEF 20%,
+      #1EADEF 25%,
+      transparent 26%
+  ),
+  radial-gradient(
+      circle at left,
+      transparent 9%,
+      #1EADEF 10%,
+      #1EADEF 15%,
+      transparent 16%
+  );
+  background-size: 3em 3em;
+  background-color: #ccc;
+  opacity: 1;
 }
 </style>
+
 
